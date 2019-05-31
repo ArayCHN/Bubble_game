@@ -75,7 +75,10 @@ public class Index{
         });
 
         panelIndex.setLayout(new BoxLayout(panelIndex, BoxLayout.Y_AXIS));
-
+        buttonStart1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonStart2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonStart3.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonQuit.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelIndex.add(buttonStart1);
         panelIndex.add(buttonStart2);
         panelIndex.add(buttonStart3);

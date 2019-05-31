@@ -10,7 +10,7 @@ import java.util.*;
 
 public class GameInterface {
     JFrame frame;
-    JPanel panel, panelMenu, panelIndex, panelGame, panelGameSettings, panelTiming;
+    JPanel panel, panelMenu, panelIndex, panelGame, panelGameSettings, panelTimer;
     boolean menuCreated = false, paused = false;
     int[][] map;
     Random rand = new Random();
@@ -23,14 +23,17 @@ public class GameInterface {
         panelGame.setOpaque(false);
         panelGameSettings = new JPanel();
         panelGameSettings.setOpaque(false);
-        panelTiming = new JPanel();
-        panelTiming.setOpaque(false);
+        panelTimer = new JPanel();
+        panelTimer.setOpaque(false);
+        panelTimer.setPreferredSize(new Dimension(200, 20));
+
+        // add timer
+        MyTimer timer = new MyTimer(60, panelTimer); // 60 seconds
+        //Thread timerThread = new Thread(timer);
+        //timerThread.start();
 
         // add the main game interface
         LogicGame logicGame = new LogicGame(level, panelGame);
-
-        // add timing
-        Timer timer = new Timer(60); // 60 seconds
 
         // add cannon
 
@@ -41,15 +44,17 @@ public class GameInterface {
         JButton pause = new JButton("PAUSE"); // functions the same as menu button!
         panelGameSettings.add(menu);
         panelGameSettings.add(pause);
-        frame.setLayout(new BorderLayout());
-        frame.add("North", panelGameSettings);
-        frame.add("Center", panelGame);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+        frame.add(panelGameSettings);
+        frame.add(panelTimer);
+        frame.add(panelGame);
 
         menu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelGame.setVisible(false);
                 panelGameSettings.setVisible(false);
+                panelTimer.setVisible(false);
                 createMenu();
             }
         });
@@ -59,6 +64,7 @@ public class GameInterface {
                 //frame.getContentPane().removeAll();
                 panelGame.setVisible(false);
                 panelGameSettings.setVisible(false);
+                panelTimer.setVisible(false);
                 createMenu();
             }
         });
@@ -82,6 +88,7 @@ public class GameInterface {
                 panelMenu.setVisible(false);
                 panelGame.setVisible(true);
                 panelGameSettings.setVisible(true);
+                panelTimer.setVisible(true);
             }
         });
 
