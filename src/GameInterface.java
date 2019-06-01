@@ -14,9 +14,11 @@ public class GameInterface {
     boolean menuCreated = false, paused = false;
     int[][] map;
     Random rand = new Random();
+    MyTimer timer;
 
     public GameInterface(int level, JFrame frameIndexIn, JPanel panelIndexIn) {
         // level1: 3*7, 3; level2: 4*7, 4; level3: 5*7, 5 colors
+
         frame = frameIndexIn;
         panelIndex = panelIndexIn;
         panelGame = new JPanel();
@@ -28,25 +30,25 @@ public class GameInterface {
         panelTimer.setPreferredSize(new Dimension(200, 20));
 
         // add timer
-        MyTimer timer = new MyTimer(60, panelTimer); // 60 seconds
-        //Thread timerThread = new Thread(timer);
-        //timerThread.start();
+        timer = new MyTimer(60, panelTimer); // 60 seconds
+        timer.paused = false;
 
-        // add the main game interface
+        // add balls
         LogicGame logicGame = new LogicGame(level, panelGame);
-
-        // add cannon
 
         // add tools
 
         // add various settings buttons
         JButton menu = new JButton("MENU");
         JButton pause = new JButton("PAUSE"); // functions the same as menu button!
+        panelGameSettings.setLayout(new BoxLayout(panelGameSettings, BoxLayout.X_AXIS));
         panelGameSettings.add(menu);
         panelGameSettings.add(pause);
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.add(panelGameSettings);
+        //frame.add(Box.createRigidArea(new Dimension(0, 50)));
         frame.add(panelTimer);
+        //frame.add(Box.createRigidArea(new Dimension(0, 50)));
         frame.add(panelGame);
 
         menu.addActionListener(new ActionListener() {
@@ -56,6 +58,7 @@ public class GameInterface {
                 panelGameSettings.setVisible(false);
                 panelTimer.setVisible(false);
                 createMenu();
+                timer.paused = true;
             }
         });
 
@@ -65,7 +68,9 @@ public class GameInterface {
                 panelGame.setVisible(false);
                 panelGameSettings.setVisible(false);
                 panelTimer.setVisible(false);
+                paused = false;
                 createMenu();
+                timer.paused = true;
             }
         });
     }
@@ -89,6 +94,7 @@ public class GameInterface {
                 panelGame.setVisible(true);
                 panelGameSettings.setVisible(true);
                 panelTimer.setVisible(true);
+                timer.paused = false;
             }
         });
 
@@ -97,6 +103,8 @@ public class GameInterface {
                 //frame.getContentPane().removeAll();
                 panelMenu.setVisible(false);
                 panelIndex.setVisible(true);
+                timer.paused = false;
+                timer.reset();
             }
         });
 

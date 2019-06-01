@@ -16,12 +16,14 @@ public class MyTimer {
     long startTime, elapsedTime;
     Timer timer;
     JProgressBar bar;
+    boolean paused = false, timesUp = false;
 
     public MyTimer(int timeLeftIn, JPanel panelTimerIn) {
         timeLeft = timeLeftIn + 1;
+        totalTime = timeLeftIn;
         timer = new Timer();
         panelTimer = panelTimerIn;
-        panelTimer.setLayout(new FlowLayout());
+        panelTimer.setLayout(new BoxLayout(panelTimer, BoxLayout.Y_AXIS));
         labelTimer = new JLabel(String.valueOf(timeLeft));
         bar = new JProgressBar(SwingConstants.HORIZONTAL);
         bar.setMaximum(timeLeftIn);
@@ -37,10 +39,21 @@ public class MyTimer {
 
     public void setTimer() {
         long interval = 1000;
+        timesUp = false;
+        paused = false;
         timer.schedule(new TimerTask() {
             public void run() {
-                timeLeft --;
-                render();
+                if (!paused) {
+                    timeLeft --;
+                    if (timeLeft == 0) {
+                        if (!timesUp) {
+                            timesUp = true;
+                            // loses // how to deal with this???
+                        }
+                        return;
+                    }
+                    render();
+                }
             }
         }, 0, interval);
     }
@@ -51,19 +64,11 @@ public class MyTimer {
         labelTimer.setText(String.valueOf(timeLeft));
     }
 
-    public void reset(int time) {
-        timeLeft = time;
-        timer.cancel();
-        setTimer();
+    public void reset() {
+        timeLeft = totalTime;
     }
 
     public void add(int time) {
         timeLeft += time;
-    }
-
-    public void run() {
-        long elapsedTime = (new Date()).getTime() - startTime;
-        timeLeft = totalTime - (int)(elapsedTime / 1000);
-        render();
     }
 }
