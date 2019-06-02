@@ -7,19 +7,23 @@ import javax.swing.event.*;
 import java.io.*;
 import java.util.*;
 import java.lang.Math;
+import java.awt.image.*;
+import javax.imageio.ImageIO;
+import java.awt.geom.*;
 
 public class LogicGame {
     int[][] map;
     JLabel[][] balls;
-    int numRow, numCol, numTyp;
+    int numRow, numCol, numTyp, totalRows;
     JPanel panelGame;
     ImageIcon[] textures = new ImageIcon[7];
     ImageIcon cannonTexture;
+    BufferedImage cannonImage;
     Random rand = new Random();
     int r = 29; // size of each ball
     int currBall, nextBall;
     int cannonCenterX, cannonCenterY;
-    JLabel labelCurrBall, labelNextBall;
+    JLabel labelCurrBall, labelNextBall, cannon;
 
     public JLabel renderBalls(double xCenter, double yCenter, int which) {
         JLabel ball = new JLabel();
@@ -47,8 +51,12 @@ public class LogicGame {
                 }
     }
 
-    public void playGame() {
-
+    public void rotateCannon(double theta) {
+        RotatedIcon rotatedCannon = new RotatedIcon(cannonTexture, theta);
+        int newWidth = rotatedCannon.getIconWidth();
+        int newHeight = rotatedCannon.getIconHeight();
+        cannon.setBounds(cannonCenterX - newWidth / 2, cannonCenterY - newHeight / 2, newWidth, newHeight);
+        cannon.setIcon(rotatedCannon);
     }
 
     public void initializeGame(int level, JPanel panelGameIn) {
@@ -60,8 +68,11 @@ public class LogicGame {
             case 3: numRow = 5 + 1; numCol = 7; numTyp = 5; break;
             default: numRow = 3 + 1; numCol = 7; numTyp = 3;
         }
-        map = new int[numRow][numCol]; // initialized to 0
-        balls = new JLabel[numRow][numCol];
+        totalRows = 8;
+        // 8 rows in total! but we need 9 rows for temporary placement for the additional ball when
+        // num of balls exceeds the lifeline and the game is over
+        map = new int[totalRows + 1][numCol]; // initialized to 0
+        balls = new JLabel[totalRows + 1][numCol];
         for (int i = 0; i < numRow; i ++)
             for (int j = 0; j < numCol; j ++) {
                 map[i][j] = rand.nextInt(numTyp) + 1;
@@ -70,12 +81,12 @@ public class LogicGame {
                 // System.out.println(String.valueOf(i) + ", " + String.valueOf(j));
             }
 
-        JLabel cannon = new JLabel();
+        cannon = new JLabel();
         cannon.setIcon(cannonTexture);
-        cannon.setBounds(180, 450, 100, 100);
-        panelGame.add(cannon);
         // cannon rotates around: 225, 500
         cannonCenterX = 225; cannonCenterY = 500;
+        cannon.setBounds(cannonCenterX - 50, cannonCenterY - 50, 100, 100);
+        panelGame.add(cannon);
 
         currBall = rand.nextInt(numTyp);
         nextBall = rand.nextInt(numTyp);
@@ -103,6 +114,11 @@ public class LogicGame {
         textures[6] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/7.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
 
         cannonTexture = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/cannon.png")).getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
+        try {
+            cannonImage = ImageIO.read(getClass().getResource("../img/cannon.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         initializeGame(level, panelGameIn);
     }
 
@@ -115,8 +131,24 @@ public class LogicGame {
 
         public void mouseMoved(MouseEvent e) { // 
             //System.out.println("Mouse moved!");
-            deltaX = e.getX() - cannonCenterX;
-            deltaY = e.getY() - cannonCenterY;
+            int tmpDeltaX = e.getX() - cannonCenterX;
+            int tmpDeltaY = e.getY() - cannonCenterY;
+            // only allow the direction of launching upwards!
+            if (- (tmpDeltaY + 0.0) / Math.sqrt(deltaX * deltaX + deltaY * deltaY) > 0.2) {
+                deltaX = tmpDeltaX;
+                deltaY = tmpDeltaY;
+            } else if (tmpDeltaX < 0) {
+                        deltaX = -10;
+                        deltaY = -2;
+                    } else {
+                        deltaX = 10;
+                        deltaY = -2;
+                    }
+            // rotate cannon
+            double theta = -Math.atan((deltaX + 0.0) / deltaY) / Math.PI * 180.0;
+            rotateCannon(theta);
+            // draw cannon direction line
+            
         }
 
         public void mouseReleased(MouseEvent e) {
@@ -124,8 +156,8 @@ public class LogicGame {
             //System.out.println("Mouse released!");
             int v = 10;
             int step = 0;
-            double dx = deltaX / Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            double dy = deltaY / Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            double dx = deltaX / (double)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            double dy = deltaY / (double)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             Thread runBall = new Thread(new RunningBallRenderer(dx, dy, v));
             runBall.start();
         }
@@ -175,6 +207,7 @@ public class LogicGame {
             }
             // stopped, need to move to correct location!
             moveToClosest(newX, newY);
+            // determine if there are 
         }
     }
 
