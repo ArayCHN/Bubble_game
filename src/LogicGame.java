@@ -143,8 +143,36 @@ public class LogicGame {
         }
     }
 
-    public void fall() {
+    public void visit(int i, int j) {
+        visited[i][j] = 1;
+        for (int k = 0; k < 6; k ++) {
+            int i1 = i + nextI[k];
+            int j1 = j + nextJ[i % 2][k];
+            if (i1 >= 0 && i1 < numRow + 1 && j1 >= 0 && j1 < numCol
+                && visited[i1][j1] != 1 && map[i1][j1] != 0) {
+                visit(i1, j1);
+            }
+        }
+    }
 
+    public void fall() {
+        clearVisited();
+        for (int j = 0; j < numCol; j ++) {
+            if (visited[0][j] == 0 && map[0][j] != 0) {
+                visit(0, j);
+            }
+        }
+        for (int i = 1; i < numRow + 1; i ++) 
+            for (int j = 0; j < numCol; j ++ ) {
+                if (map[i][j] != 0 && visited[i][j] == 0) { // this ball should fall!
+                    map[i][j] = 0;
+                    JLabel fallingBall = balls[i][j];
+                    int x = (int)(((i % 2) + 2.1 * j) * r), y = (int)((1.8 * i) * r);
+                    FallingBallRenderer renderer = new FallingBallRenderer(x, y, fallingBall);
+                    Thread tFall = new Thread(renderer);
+                    tFall.start();
+            }
+        }
     }
 
     public boolean fails() {
@@ -156,6 +184,12 @@ public class LogicGame {
     }
 
     public boolean wins() {
+        int numBalls = 0;
+        for (int i = 0; i < numRow; i ++)
+            for (int j = 0; j < numCol; j ++) {
+                if (map[i][j] != 0)
+                    numBalls ++;
+            }
         if (numBalls < 5)
             return true;
         else
@@ -297,6 +331,28 @@ public class LogicGame {
         }
     }
 
+    class FallingBallRenderer implements Runnable {
+        int v = 10, initX, initY, newX, newY;
+        JLabel fallingBall;
+
+        public FallingBallRenderer(int initXIn, int initYIn, JLabel fallingBallIn) {
+            newX = initXIn;
+            newY = initYIn;
+            fallingBall = fallingBallIn;
+        }
+
+        public void run() {
+            while (newY < 500) { // find stop condition!
+                newY += (int)v;
+                fallingBall.setBounds(newX, newY, 2 * r, 2 * r);
+                try {
+                    Thread.sleep(10);
+                } catch(Exception e1) {}
+            }
+            fallingBall.setIcon(null);
+        }
+    }
+
     class RunningBallRenderer implements Runnable {
         double dx, dy;
         int v, newX, newY;
@@ -309,49 +365,51 @@ public class LogicGame {
 
         public void run() {
             synchronized(map) {
-            int step = 0;
-            newX = 200;
-            newY = 500;
-            while (!stopped(newX, newY)) { // find stop condition!
-                newX += (int)(v * dx);
-                newY += (int)(v * dy);
-                if (newX <= 10 || newX >= 450) { // reflected
-                    dx = -dx;
+                int step = 0;
+                newX = 200;
+                newY = 500;
+                while (!stopped(newX, newY)) { // find stop condition!
+                    newX += (int)(v * dx);
+                    newY += (int)(v * dy);
+                    if (newX <= 10 || newX >= 450) { // reflected
+                        dx = -dx;
+                    }
+                    step ++;
+                    labelCurrBall.setBounds(newX, newY, 2 * r, 2 * r);
+                    try {
+                        Thread.sleep(10);
+                    } catch(Exception e1) {}
                 }
-                step ++;
-                labelCurrBall.setBounds(newX, newY, 2 * r, 2 * r);
-                try {
-                    Thread.sleep(10);
-                } catch(Exception e1) {}
-            }
-            // stopped, need to move to correct location!
-            // System.out.println("Stopped!");
-            MutableInteger newII = new MutableInteger(0), newJI = new MutableInteger(0);
-            moveToClosest(newX, newY, newII, newJI);
-            int newI = newII.getValue(), newJ = newJI.getValue();
-            // System.out.println(newI);
-            // System.out.println(newJ);
-            // System.out.println("current Ball: "+String.valueOf(currBall));
-            map[newI][newJ] = currBall;
-            // System.out.println("3, 0: "+String.valueOf(map[3][0]));
-            // System.out.println("first run!");
-            balls[newI][newJ] = labelCurrBall;
-            // reset labelCurrBall and labelNextBall
-            generateNewBall();
-            // determine if there are eliminations
-            clearVisited();
-            if (eliminatable(newI, newJ) >= 3) {
+                // stopped, need to move to correct location!
+                // System.out.println("Stopped!");
+                MutableInteger newII = new MutableInteger(0), newJI = new MutableInteger(0);
+                moveToClosest(newX, newY, newII, newJI);
+                int newI = newII.getValue(), newJ = newJI.getValue();
+                // System.out.println(newI);
+                // System.out.println(newJ);
+                // System.out.println("current Ball: "+String.valueOf(currBall));
+                map[newI][newJ] = currBall;
+                // System.out.println("3, 0: "+String.valueOf(map[3][0]));
+                // System.out.println("first run!");
+                balls[newI][newJ] = labelCurrBall;
+                // reset labelCurrBall and labelNextBall
+                generateNewBall();
+                // determine if there are eliminations
                 clearVisited();
-                eliminate(newI, newJ);
-            }
-            // determine if there are isolated balls falling
-            fall();
-            // determine if wins or fails!
-            if (fails()) {
-                System.out.println("fails!");
-            } else if (wins()) {
-                System.out.println("wins!");
-            }
+                if (eliminatable(newI, newJ) >= 3) {
+                    clearVisited();
+                    eliminate(newI, newJ);
+                }
+                // determine if there are isolated balls falling
+                fall();
+                // determine if wins or fails!
+                if (fails()) {
+                    System.out.println("fails!");
+                    // go to GameOver page
+                } else if (wins()) {
+                    System.out.println("wins!");
+                    // go to Win page
+                }
             }
         }
     }

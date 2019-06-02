@@ -48,7 +48,7 @@ public class MyTimer {
                     if (timeLeft == 0) {
                         if (!timesUp) {
                             timesUp = true;
-                            // loses // how to deal with this???
+                            // go to GameOver page
                         }
                         return;
                     }
