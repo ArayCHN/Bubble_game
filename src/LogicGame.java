@@ -10,11 +10,25 @@ import java.lang.Math;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.awt.geom.*;
+import java.util.concurrent.*;
+
+class MutableInteger {
+    int value;
+    public void setValue(int valueIn) {
+        value = valueIn;
+    }
+    public int getValue() {
+        return value;
+    }
+    public MutableInteger(int valueIn) {
+        setValue(valueIn);
+    }
+}
 
 public class LogicGame {
-    int[][] map;
+    int[][] map, visited;
     JLabel[][] balls;
-    int numRow, numCol, numTyp, totalRows;
+    int numRow, numCol, numTyp, numInitRow, numBalls = 0; // initial num of rows is not total num of rows
     JPanel panelGame;
     ImageIcon[] textures = new ImageIcon[7];
     ImageIcon cannonTexture;
@@ -24,6 +38,8 @@ public class LogicGame {
     int currBall, nextBall;
     int cannonCenterX, cannonCenterY;
     JLabel labelCurrBall, labelNextBall, cannon;
+    int[] nextI = {0, 0, 1, -1, 1, -1};
+    int[][] nextJ = {{1, -1, 0, 0, -1, -1}, {1, -1, 0, 0, 1, 1}}; // nextJ[i % 2][k]
 
     public JLabel renderBalls(double xCenter, double yCenter, int which) {
         JLabel ball = new JLabel();
@@ -37,18 +53,49 @@ public class LogicGame {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
-    public void moveToClosest(int x, int y) {
+    public void moveToClosest(int x, int y, MutableInteger newI, MutableInteger newJ) { // (x, y) is the upper-left corner
         double existingX, existingY;
+        boolean moved = false;
+        // double xCenter = (i % 2) + 2.1 * j + 1, yCenter = 1 + 1.8 * i;
+        int movedI = (int)Math.round(y / 1.8 / r);
+        int movedJ = (int)Math.round(x / 2.1 / r) - (movedI % 2);
         for (int i = 0; i < numRow + 1; i++)
+            for (int j = 0; j < numCol; j++) {
+                existingX = ((i % 2) + 2.1 * j + 1) * r - r;
+                existingY = (1 + 1.8 * i) * r - r;
+                if (distance(existingX, existingY, x, y) <= r) {
+                    // move from here to existingX, existingY
+                    labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
+                    moved = true;
+                    movedI = i;
+                    movedJ = j;
+                    break;
+                }
+            }
+        // cases where the ball is to the right-most position in an even row.
+        // it is not within range r of the closest point, so it is not moved
+        // TODO: fix the bug when right-most ball fails!
+        if (moved == false) {
+            // yCenter = 1 + 1.8 * i;
+            int currRow = (int)Math.round(y / 1.8 / r);
+            if (currRow % 2 == 0)
+                x -= 2 * r;
+            for (int i = 0; i < numRow + 1; i++)
                 for (int j = 0; j < numCol; j++) {
                     existingX = ((i % 2) + 2.1 * j + 1) * r - r;
                     existingY = (1 + 1.8 * i) * r - r;
                     if (distance(existingX, existingY, x, y) <= r) {
                         // move from here to existingX, existingY
                         labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
+                        moved = true;
+                        movedI = i;
+                        movedJ = j;
                         break;
                     }
                 }
+        }
+        newI.setValue(movedI);
+        newJ.setValue(movedJ);
     }
 
     public void rotateCannon(double theta) {
@@ -59,27 +106,114 @@ public class LogicGame {
         cannon.setIcon(rotatedCannon);
     }
 
+    public void clearVisited() {
+        visited = new int[numRow + 1][numCol]; // default to zero
+    }
+
+    public int eliminatable(int i, int j) { // return >= 3, eliminatable, otherwise, non-eliminatable
+        int color = map[i][j];
+        visited[i][j] = 1;
+        int num = 1;
+        for (int k = 0; k < 6; k ++) {
+            int i1 = i + nextI[k];
+            int j1 = j + nextJ[i % 2][k];
+            if (i1 >= 0 && i1 < numRow + 1 && j1 >= 0 && j1 < numCol
+                && visited[i1][j1] != 1 && map[i1][j1] == color) {
+                num += eliminatable(i1, j1);
+                if (num >= 3)
+                    return num; // trimming, no need to find more
+            }
+        }
+        return num;
+    }
+
+    public void eliminate(int i, int j) {
+        int color = map[i][j];
+        visited[i][j] = 1;
+        map[i][j] = 0;
+        balls[i][j].setIcon(null); // clear icon
+        //balls[i][j].revalidate();
+        for (int k = 0; k < 6; k ++) {
+            int i1 = i + nextI[k];
+            int j1 = j + nextJ[i % 2][k];
+            if (i1 >= 0 && i1 < numRow + 1 && j1 >= 0 && j1 < numCol
+                && visited[i1][j1] != 1 && map[i1][j1] == color) {
+                eliminate(i1, j1);
+            }
+        }
+    }
+
+    public void fall() {
+
+    }
+
+    public boolean fails() {
+        for (int j = 0; j < numCol; j++) {
+            if (map[numRow][j] != 0)
+                return true;
+        }
+        return false;
+    }
+
+    public boolean wins() {
+        if (numBalls < 5)
+            return true;
+        else
+            return false;
+    }
+
+    public void generateNewBall() {
+        currBall = nextBall;
+        labelNextBall.setBounds(200, 500, 2 * r, 2 * r); // move next ball to curr ball location
+        labelCurrBall = labelNextBall;
+        labelNextBall = new JLabel();
+        nextBall = rand.nextInt(numTyp) + 1; // should not be 0, 0 is empty ball
+        labelNextBall.setIcon(textures[nextBall - 1]);
+        labelNextBall.setBounds(100, 500, 2 * r, 2 * r);
+        panelGame.add(labelNextBall);
+    }
+
+    public boolean stopped(int newX, int newY) {
+        int centerX = newX + r;
+        int centerY = newY + r;
+        double existingX, existingY;
+        if (centerY <= 1.1 * r) // reaches the ceiling, also stops!
+            return true;
+        for (int i = 0; i < numRow + 1; i++)
+            for (int j = 0; j < numCol; j++) {
+                existingX = ((i % 2) + 2.1 * j + 1) * r;
+                existingY = (1 + 1.8 * i) * r;
+                if (map[i][j] != 0 && distance(existingX, existingY, centerX, centerY) <= 2.2 * r) {
+                    // stop!
+                    // System.out.println("3, 0: "+String.valueOf(map[3][0]));
+                    return true;
+                }
+            }
+        return false;
+    }
+
     public void initializeGame(int level, JPanel panelGameIn) {
         panelGame = panelGameIn;
         panelGame.setLayout(null); // set absolute layout
         switch (level) {
-            case 1: numRow = 3 + 1; numCol = 7; numTyp = 3; break; // the additional 1 row for buffer
-            case 2: numRow = 4 + 1; numCol = 7; numTyp = 4; break;
-            case 3: numRow = 5 + 1; numCol = 7; numTyp = 5; break;
-            default: numRow = 3 + 1; numCol = 7; numTyp = 3;
+            case 1: numInitRow = 3; numCol = 7; numTyp = 3; break;
+            case 2: numInitRow = 4; numCol = 7; numTyp = 4; break;
+            case 3: numInitRow = 5; numCol = 7; numTyp = 5; break;
+            default: numInitRow = 3; numCol = 7; numTyp = 3;
         }
-        totalRows = 8;
+        numRow = 8;
         // 8 rows in total! but we need 9 rows for temporary placement for the additional ball when
         // num of balls exceeds the lifeline and the game is over
-        map = new int[totalRows + 1][numCol]; // initialized to 0
-        balls = new JLabel[totalRows + 1][numCol];
-        for (int i = 0; i < numRow; i ++)
+        map = new int[numRow + 1][numCol]; // initialized to 0
+        balls = new JLabel[numRow + 1][numCol];
+        for (int i = 0; i < numInitRow; i ++)
             for (int j = 0; j < numCol; j ++) {
                 map[i][j] = rand.nextInt(numTyp) + 1;
                 double xCenter = (i % 2) + 2.1 * j + 1, yCenter = 1 + 1.8 * i;
                 balls[i][j] = renderBalls(xCenter, yCenter, map[i][j]); // graphics
                 // System.out.println(String.valueOf(i) + ", " + String.valueOf(j));
             }
+        numBalls = numInitRow * numCol; // initial num of balls
 
         cannon = new JLabel();
         cannon.setIcon(cannonTexture);
@@ -88,12 +222,12 @@ public class LogicGame {
         cannon.setBounds(cannonCenterX - 50, cannonCenterY - 50, 100, 100);
         panelGame.add(cannon);
 
-        currBall = rand.nextInt(numTyp);
-        nextBall = rand.nextInt(numTyp);
+        currBall = rand.nextInt(numTyp) + 1;
+        nextBall = rand.nextInt(numTyp) + 1;
         labelCurrBall = new JLabel();
         labelNextBall = new JLabel();
-        labelCurrBall.setIcon(textures[currBall]);
-        labelNextBall.setIcon(textures[nextBall]);
+        labelCurrBall.setIcon(textures[currBall - 1]);
+        labelNextBall.setIcon(textures[nextBall - 1]);
         labelCurrBall.setBounds(200, 500, 2 * r, 2 * r);
         labelNextBall.setBounds(100, 500, 2 * r, 2 * r);
         panelGame.add(labelCurrBall);
@@ -148,7 +282,7 @@ public class LogicGame {
             double theta = -Math.atan((deltaX + 0.0) / deltaY) / Math.PI * 180.0;
             rotateCannon(theta);
             // draw cannon direction line
-            
+            // not implemented
         }
 
         public void mouseReleased(MouseEvent e) {
@@ -166,22 +300,6 @@ public class LogicGame {
     class RunningBallRenderer implements Runnable {
         double dx, dy;
         int v, newX, newY;
-
-        private boolean stopped(int newX, int newY) {
-            int centerX = newX + r;
-            int centerY = newY + r;
-            double existingX, existingY;
-            for (int i = 0; i < numRow; i++)
-                for (int j = 0; j < numCol; j++) {
-                    existingX = ((i % 2) + 2.1 * j + 1) * r;
-                    existingY = (1 + 1.8 * i) * r;
-                    if (map[i][j] != 0 && distance(existingX, existingY, centerX, centerY) <= 2.2 * r) {
-                        // stop!
-                        return true;
-                    }
-                }
-            return false;
-        }
         
         public RunningBallRenderer(double dxIn, double dyIn, int vIn) {
             dx = dxIn;
@@ -190,6 +308,7 @@ public class LogicGame {
         }
 
         public void run() {
+            synchronized(map) {
             int step = 0;
             newX = 200;
             newY = 500;
@@ -206,8 +325,34 @@ public class LogicGame {
                 } catch(Exception e1) {}
             }
             // stopped, need to move to correct location!
-            moveToClosest(newX, newY);
-            // determine if there are 
+            // System.out.println("Stopped!");
+            MutableInteger newII = new MutableInteger(0), newJI = new MutableInteger(0);
+            moveToClosest(newX, newY, newII, newJI);
+            int newI = newII.getValue(), newJ = newJI.getValue();
+            // System.out.println(newI);
+            // System.out.println(newJ);
+            // System.out.println("current Ball: "+String.valueOf(currBall));
+            map[newI][newJ] = currBall;
+            // System.out.println("3, 0: "+String.valueOf(map[3][0]));
+            // System.out.println("first run!");
+            balls[newI][newJ] = labelCurrBall;
+            // reset labelCurrBall and labelNextBall
+            generateNewBall();
+            // determine if there are eliminations
+            clearVisited();
+            if (eliminatable(newI, newJ) >= 3) {
+                clearVisited();
+                eliminate(newI, newJ);
+            }
+            // determine if there are isolated balls falling
+            fall();
+            // determine if wins or fails!
+            if (fails()) {
+                System.out.println("fails!");
+            } else if (wins()) {
+                System.out.println("wins!");
+            }
+            }
         }
     }
 
