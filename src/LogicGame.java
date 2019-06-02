@@ -33,6 +33,20 @@ public class LogicGame {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
+    public void moveToClosest(int x, int y) {
+        double existingX, existingY;
+        for (int i = 0; i < numRow + 1; i++)
+                for (int j = 0; j < numCol; j++) {
+                    existingX = ((i % 2) + 2.1 * j + 1) * r - r;
+                    existingY = (1 + 1.8 * i) * r - r;
+                    if (distance(existingX, existingY, x, y) <= r) {
+                        // move from here to existingX, existingY
+                        labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
+                        break;
+                    }
+                }
+    }
+
     public void playGame() {
 
     }
@@ -148,17 +162,19 @@ public class LogicGame {
             newX = 200;
             newY = 500;
             while (!stopped(newX, newY)) { // find stop condition!
-                newX = 200 + (int)(v * step * dx);
-                newY = 500 + (int)(v * step * dy);
+                newX += (int)(v * dx);
+                newY += (int)(v * dy);
+                if (newX <= 10 || newX >= 450) { // reflected
+                    dx = -dx;
+                }
                 step ++;
                 labelCurrBall.setBounds(newX, newY, 2 * r, 2 * r);
                 try {
                     Thread.sleep(10);
                 } catch(Exception e1) {}
             }
-            // reflected
-
-            // stopped
+            // stopped, need to move to correct location!
+            moveToClosest(newX, newY);
         }
     }
 
