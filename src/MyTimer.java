@@ -7,6 +7,7 @@ import javax.swing.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.Timer;
+import sun.audio.*;
 
 public class MyTimer {
     int timeLeft, totalTime;
@@ -47,6 +48,12 @@ public class MyTimer {
             public void run() {
                 if (!paused) {
                     timeLeft --;
+                    try {
+                        AudioStream audioTick = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/tick.wav"));
+                        AudioPlayer.player.start(audioTick);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                     if (timeLeft == 0) {
                         if (!timesUp) {
                             timesUp = true;
@@ -75,5 +82,7 @@ public class MyTimer {
 
     public void add(int time) {
         timeLeft += time;
+        if (timeLeft > 60)
+            timeLeft = 60;
     }
 }

@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import sun.audio.*;
 
 class JFrameWithBg extends JFrame {
     public JFrameWithBg(String name) {
@@ -31,15 +32,17 @@ public class Index{
     JPanel panelIndex;
     JButton buttonStart1, buttonStart2, buttonStart3, buttonQuit;
     GameInterface gamePage;
+    Audios audios;
     // public static Index indexPage;
 
-    public Index() {
+    public Index(Audios audiosIn) {
         frame = new JFrameWithBg("Bubble Game");
         createNew();
         frame.setBounds(100, 100, GlobalSettings.windowWidth, GlobalSettings.windowHeight);
         frame.setVisible(true);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        audios = audiosIn;
     }
 
     public void createNew() {

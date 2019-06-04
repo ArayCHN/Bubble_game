@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
 import java.util.*;
+import sun.audio.*;
 
 public class GameInterface {
     JFrame frame;

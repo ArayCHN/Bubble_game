@@ -11,6 +11,7 @@ import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.awt.geom.*;
 import java.util.concurrent.*;
+import sun.audio.*;
 
 class MutableInteger {
     int value;
@@ -139,12 +140,16 @@ public class LogicGame {
     }
 
     public void fall() {
-        clearVisited();
+        clearVisited(); // find eligible balls
         for (int j = 0; j < numCol; j ++) {
             if (visited[0][j] == 0 && map[0][j] != 0) {
                 visit(0, j);
             }
         }
+        fallEffect();
+    }
+
+    public void fallEffect() { // actually falls eligible balls!
         for (int i = 1; i < numRow + 1; i ++) 
             for (int j = 0; j < numCol; j ++ ) {
                 if (map[i][j] != 0 && visited[i][j] == 0) { // this ball should fall!
@@ -155,6 +160,55 @@ public class LogicGame {
                     Thread tFall = new Thread(renderer);
                     tFall.start();
             }
+        }
+    }
+
+    public void postProcess(int i, int j) {
+        if (map[i][j] < 6) {
+            // determine if there are eliminations
+            clearVisited();
+            if (eliminatable(i, j) >= 3) {
+                clearVisited();
+                eliminate(i, j);
+            }
+            // determine if there are isolated balls falling
+            fall();
+        } else if (map[i][j] == 6) { // bomb
+            map[i][j] = 0;
+            balls[i][j].setIcon(null); // clear icon
+            for (int k = 0; k < 6; k ++) {
+                int i1 = i + nextI[k];
+                int j1 = j + nextJ[i % 2][k];
+                if (i1 >= 0 && i1 < numRow + 1 && j1 >= 0 && j1 < numCol && map[i1][j1] != 0) {
+                    map[i1][j1] = 0;
+                    balls[i1][j1].setIcon(null); // clear icon
+                }
+            }
+            fall();
+        } else if (map[i][j] == 7) {
+            try {
+                Thread.sleep(50);
+            } catch(Exception e) {}
+            for (int k = 0; k < 6; k ++) {
+                int i1 = i + nextI[k];
+                int j1 = j + nextJ[i % 2][k];
+                if (i1 >= 0 && i1 < numRow + 1 && j1 >= 0 && j1 < numCol && map[i1][j1] != 0) {
+                    map[i][j] = map[i1][j1];
+                    balls[i][j].setIcon(textures[map[i1][j1] - 1]); // clear icon
+                    break;
+                }
+            }
+            try {
+                Thread.sleep(500);
+            } catch(Exception e) {}
+            // determine if there are eliminations
+            clearVisited();
+            if (eliminatable(i, j) >= 3) {
+                clearVisited();
+                eliminate(i, j);
+            }
+            // determine if there are isolated balls falling
+            fall();
         }
     }
 
@@ -255,8 +309,60 @@ public class LogicGame {
         panelGame.add(labelNextBall);
 
         // tools: bomb, rainbow, laser, gold
-        buttonBomb = new JButton();
-        panelGame.add();
+        ImageIcon iconBomb = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/bomb.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        JButton buttonBomb = new JButton(iconBomb);
+        buttonBomb.setBounds(cannonCenterX + 3 * r, cannonCenterY - r, 2 * r, 2 * r);
+        panelGame.add(buttonBomb);
+        buttonBomb.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                currBall = 6;
+                labelCurrBall.setIcon(textures[5]);
+                index.frame.revalidate();
+                index.frame.repaint();
+            }
+        });
+
+        ImageIcon iconRainbow = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/rainbow.png")).getImage().getScaledInstance((int)(1.8*r), (int)(1.8*r), Image.SCALE_DEFAULT));
+        JButton buttonRainbow = new JButton(iconRainbow);
+        buttonRainbow.setBounds(cannonCenterX + 6 * r, cannonCenterY - r, 2 * r, 2 * r);
+        panelGame.add(buttonRainbow);
+        buttonRainbow.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                currBall = 7;
+                labelCurrBall.setIcon(textures[6]);
+                index.frame.revalidate();
+                index.frame.repaint();
+            }
+        });
+
+        ImageIcon iconLaser = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/laser.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        JButton buttonLaser = new JButton(iconLaser);
+        buttonLaser.setBounds(cannonCenterX + 3 * r, cannonCenterY - 3 * r, 2 * r, 2 * r);
+        panelGame.add(buttonLaser);
+        buttonLaser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearVisited();
+                for (int j = 0; j < numCol; j ++) {
+                    visited[0][j] = 1;
+                }
+                fallEffect();
+                if (fails()) {
+                    index.gamePage.gameOver("You lose!");
+                } else if (wins()) {
+                    index.gamePage.gameOver("You win!");
+                }
+            }
+        });
+
+        ImageIcon iconGold = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/gold.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        JButton buttonGold = new JButton(iconGold);
+        buttonGold.setBounds(cannonCenterX + 6 * r, cannonCenterY - 3 * r, 2 * r, 2 * r);
+        panelGame.add(buttonGold);
+        buttonGold.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                index.gamePage.timer.add(10);
+            }
+        });
 
         GameMouseListener listener = new GameMouseListener();
         panelGame.addMouseListener(listener);
@@ -269,8 +375,8 @@ public class LogicGame {
         textures[2] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/3.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         textures[3] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/4.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         textures[4] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/5.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[5] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/6.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[6] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/7.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        textures[5] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/6.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT)); // bomb
+        textures[6] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/7.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT)); // rainbow
 
         cannonTexture = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/cannon.png")).getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
         try {
@@ -280,6 +386,8 @@ public class LogicGame {
         }
         initializeGame(level, panelGameIn);
         index = indexIn;
+        // AudioPlayer.player.stop(audios.audioMenu);
+        // AudioPlayer.player.start(audios.audioBgm);
     }
 
     private class GameMouseListener extends MouseAdapter {
@@ -313,13 +421,14 @@ public class LogicGame {
 
         public void mouseReleased(MouseEvent e) {
             // launch the ball
-            //System.out.println("Mouse released!");
+            // System.out.println("Mouse released!");
             int v = 10;
             int step = 0;
             double dx = deltaX / (double)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             double dy = deltaY / (double)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             Thread runBall = new Thread(new RunningBallRenderer(dx, dy, v));
             runBall.start();
+
         }
     }
 
@@ -379,16 +488,9 @@ public class LogicGame {
                 int newI = newII.getValue(), newJ = newJI.getValue();
                 map[newI][newJ] = currBall;
                 balls[newI][newJ] = labelCurrBall;
+                postProcess(newI, newJ); // functions of bomb or rainbow; eliminate or fall
                 // reset labelCurrBall and labelNextBall
                 generateNewBall();
-                // determine if there are eliminations
-                clearVisited();
-                if (eliminatable(newI, newJ) >= 3) {
-                    clearVisited();
-                    eliminate(newI, newJ);
-                }
-                // determine if there are isolated balls falling
-                fall();
                 // determine if wins or fails!
                 if (fails()) {
                     index.gamePage.gameOver("You lose!");

@@ -1,5 +1,6 @@
 // the main file for the game; where everything is launched
 package bubblegame;
+import sun.audio.*;
 
 public class BubbleGame {
 
@@ -8,7 +9,8 @@ public class BubbleGame {
     }
 
     public static void main(String[] args) {
-        Index indexPage = new Index();
+        Audios audios = new Audios();
+        Index indexPage = new Index(audios);
         //GameInterface gameInterface = new GameInterface(0, indexaPage);
     }
 }
