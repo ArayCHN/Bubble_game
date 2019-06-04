@@ -40,6 +40,8 @@ public class LogicGame {
     JLabel labelCurrBall, labelNextBall, cannon;
     int[] nextI = {0, 0, 1, -1, 1, -1};
     int[][] nextJ = {{1, -1, 0, 0, -1, -1}, {1, -1, 0, 0, 1, 1}}; // nextJ[i % 2][k]
+    // GameInterface gameInterface;
+    Index index;
 
     public JLabel renderBalls(double xCenter, double yCenter, int which) {
         JLabel ball = new JLabel();
@@ -272,7 +274,7 @@ public class LogicGame {
         panelGame.addMouseMotionListener(listener);
     }
 
-    public LogicGame(int level, JPanel panelGameIn) {
+    public LogicGame(int level, JPanel panelGameIn, Index indexIn) {
         textures[0] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/1.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         textures[1] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/2.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         textures[2] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/3.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
@@ -288,6 +290,7 @@ public class LogicGame {
             e.printStackTrace();
         }
         initializeGame(level, panelGameIn);
+        index = indexIn;
     }
 
     private class GameMouseListener extends MouseAdapter {
@@ -385,12 +388,7 @@ public class LogicGame {
                 MutableInteger newII = new MutableInteger(0), newJI = new MutableInteger(0);
                 moveToClosest(newX, newY, newII, newJI);
                 int newI = newII.getValue(), newJ = newJI.getValue();
-                // System.out.println(newI);
-                // System.out.println(newJ);
-                // System.out.println("current Ball: "+String.valueOf(currBall));
                 map[newI][newJ] = currBall;
-                // System.out.println("3, 0: "+String.valueOf(map[3][0]));
-                // System.out.println("first run!");
                 balls[newI][newJ] = labelCurrBall;
                 // reset labelCurrBall and labelNextBall
                 generateNewBall();
@@ -404,11 +402,11 @@ public class LogicGame {
                 fall();
                 // determine if wins or fails!
                 if (fails()) {
-                    System.out.println("fails!");
-                    // go to GameOver page
+                    // System.out.println("fails!");
+                    index.gamePage.gameOver("You lose!");
                 } else if (wins()) {
-                    System.out.println("wins!");
-                    // go to Win page
+                    // System.out.println("wins!");
+                    index.gamePage.gameOver("You win!");
                 }
             }
         }

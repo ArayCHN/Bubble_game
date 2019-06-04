@@ -15,10 +15,11 @@ public class GameInterface {
     int[][] map;
     Random rand = new Random();
     MyTimer timer;
+    Index index;
 
-    public GameInterface(int level, JFrame frameIndexIn, JPanel panelIndexIn) {
+    public GameInterface(int level, JFrame frameIndexIn, JPanel panelIndexIn, Index indexIn) {
         // level1: 3*7, 3; level2: 4*7, 4; level3: 5*7, 5 colors
-
+        index = indexIn;
         frame = frameIndexIn;
         panelIndex = panelIndexIn;
         panelGame = new JPanel();
@@ -30,11 +31,11 @@ public class GameInterface {
         panelTimer.setPreferredSize(new Dimension(200, 20));
 
         // add timer
-        timer = new MyTimer(60, panelTimer); // 60 seconds
+        timer = new MyTimer(60, panelTimer, this); // 60 seconds
         timer.paused = false;
 
         // add balls
-        LogicGame logicGame = new LogicGame(level, panelGame);
+        LogicGame logicGame = new LogicGame(level, panelGame, index);
 
         // add tools
 
@@ -120,6 +121,16 @@ public class GameInterface {
         panelMenu.add(buttonQuit);
         frame.add(panelMenu);
         menuCreated = true;
+    }
+
+    public void gameOver(String endGameMessage) {
+        JOptionPane.showMessageDialog(frame, endGameMessage); // display message
+        // clear game page and restart everything
+        timer.reset();
+        panelGame.setVisible(false);
+        panelGameSettings.setVisible(false);
+        panelTimer.setVisible(false);
+        panelIndex.setVisible(true);
     }
 
 }

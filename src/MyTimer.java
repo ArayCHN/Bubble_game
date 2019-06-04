@@ -17,8 +17,10 @@ public class MyTimer {
     Timer timer;
     JProgressBar bar;
     boolean paused = false, timesUp = false;
+    GameInterface gameInterface;
 
-    public MyTimer(int timeLeftIn, JPanel panelTimerIn) {
+    public MyTimer(int timeLeftIn, JPanel panelTimerIn, GameInterface gameInterfaceIn) {
+        gameInterface = gameInterfaceIn;
         timeLeft = timeLeftIn + 1;
         totalTime = timeLeftIn;
         timer = new Timer();
@@ -49,6 +51,8 @@ public class MyTimer {
                         if (!timesUp) {
                             timesUp = true;
                             // go to GameOver page
+                            paused = true;
+                            gameInterface.gameOver("Time's up!");
                         }
                         return;
                     }
@@ -65,6 +69,7 @@ public class MyTimer {
     }
 
     public void reset() {
+        timer.cancel();
         timeLeft = totalTime;
     }
 

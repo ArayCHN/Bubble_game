@@ -35,7 +35,15 @@ public class Index{
 
     public Index() {
         frame = new JFrameWithBg("Bubble Game");
+        createNew();
+        frame.setBounds(100, 100, 460, 640);
+        frame.setVisible(true);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
 
+    public void createNew() {
+        Index myIndex = this;
         panelIndex = new JPanel();
         panelIndex.setLayout(new FlowLayout());
 
@@ -48,7 +56,7 @@ public class Index{
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
-                gamePage = new GameInterface(1, frame, panelIndex);
+                gamePage = new GameInterface(1, frame, panelIndex, myIndex);
             }
         });
 
@@ -56,7 +64,7 @@ public class Index{
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
-                gamePage = new GameInterface(2, frame, panelIndex);
+                gamePage = new GameInterface(2, frame, panelIndex, myIndex);
             }
         });
 
@@ -64,7 +72,7 @@ public class Index{
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
-                gamePage = new GameInterface(3, frame, panelIndex);
+                gamePage = new GameInterface(3, frame, panelIndex, myIndex);
             }
         });
 
@@ -91,14 +99,12 @@ public class Index{
 
         JPanel contentPanel = (JPanel)frame.getContentPane();
         contentPanel.setOpaque(false);
-
-        frame.setBounds(100, 100, 460, 640);
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void reset() {
-        panelIndex.setVisible(true);
+        frame.removeAll();
+        createNew();
+        frame.revalidate();
+        frame.repaint();
     }
 }
