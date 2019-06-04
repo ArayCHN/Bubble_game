@@ -169,11 +169,23 @@ public class LogicGame {
             clearVisited();
             if (eliminatable(i, j) >= 3) {
                 clearVisited();
+                try {
+                    AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/eliminate.wav"));
+                    AudioPlayer.player.start(audioFall);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 eliminate(i, j);
             }
             // determine if there are isolated balls falling
             fall();
         } else if (map[i][j] == 6) { // bomb
+            try {
+                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/bomb.wav"));
+                AudioPlayer.player.start(audioFall);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
             map[i][j] = 0;
             balls[i][j].setIcon(null); // clear icon
             for (int k = 0; k < 6; k ++) {
@@ -186,6 +198,12 @@ public class LogicGame {
             }
             fall();
         } else if (map[i][j] == 7) {
+            try {
+                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/transform.wav"));
+                AudioPlayer.player.start(audioFall);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
             try {
                 Thread.sleep(50);
             } catch(Exception e) {}
@@ -205,6 +223,12 @@ public class LogicGame {
             clearVisited();
             if (eliminatable(i, j) >= 3) {
                 clearVisited();
+                try {
+                    AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/eliminate.wav"));
+                    AudioPlayer.player.start(audioFall);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 eliminate(i, j);
             }
             // determine if there are isolated balls falling
@@ -360,6 +384,7 @@ public class LogicGame {
         panelGame.add(buttonGold);
         buttonGold.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
                 index.gamePage.timer.add(10);
             }
         });
@@ -386,8 +411,6 @@ public class LogicGame {
         }
         initializeGame(level, panelGameIn);
         index = indexIn;
-        // AudioPlayer.player.stop(audios.audioMenu);
-        // AudioPlayer.player.start(audios.audioBgm);
     }
 
     private class GameMouseListener extends MouseAdapter {
@@ -428,7 +451,6 @@ public class LogicGame {
             double dy = deltaY / (double)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             Thread runBall = new Thread(new RunningBallRenderer(dx, dy, v));
             runBall.start();
-
         }
     }
 
@@ -443,6 +465,12 @@ public class LogicGame {
         }
 
         public void run() {
+            try {
+                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/fall.wav"));
+                AudioPlayer.player.start(audioFall);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
             while (newY < GlobalSettings.deathLineHeight) { // find stop condition!
                 newY += (int)v;
                 fallingBall.setBounds(newX, newY, 2 * r, 2 * r);
@@ -466,6 +494,12 @@ public class LogicGame {
 
         public void run() {
             synchronized(map) {
+                try {
+                    AudioStream audioLaunch = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/launch.wav"));
+                    AudioPlayer.player.start(audioLaunch);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 int step = 0;
                 newX = cannonCenterX - r;
                 newY = cannonCenterY - r;
@@ -473,6 +507,12 @@ public class LogicGame {
                     newX += (int)(v * dx);
                     newY += (int)(v * dy);
                     if (newX <= 10 || newX >= GlobalSettings.windowWidth - 50) { // reflected
+                        try {
+                            AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/reflect.wav"));
+                            AudioPlayer.player.start(audioFall);
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
                         dx = -dx;
                     }
                     step ++;
@@ -493,8 +533,20 @@ public class LogicGame {
                 generateNewBall();
                 // determine if wins or fails!
                 if (fails()) {
+                    try {
+                        AudioStream audioLose = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/lose.wav"));
+                        AudioPlayer.player.start(audioLose);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                     index.gamePage.gameOver("You lose!");
                 } else if (wins()) {
+                    try {
+                        AudioStream audioWin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/win.wav"));
+                        AudioPlayer.player.start(audioWin);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                     index.gamePage.gameOver("You win!");
                 }
             }

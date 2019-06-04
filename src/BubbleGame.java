@@ -11,6 +11,13 @@ public class BubbleGame {
     public static void main(String[] args) {
         Audios audios = new Audios();
         Index indexPage = new Index(audios);
+        // always play this music
+        try {
+            AudioStream audioBgm = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/bgm.wav"));
+            AudioPlayer.player.start(audioBgm);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         //GameInterface gameInterface = new GameInterface(0, indexaPage);
     }
 }

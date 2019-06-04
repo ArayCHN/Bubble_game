@@ -59,6 +59,12 @@ public class MyTimer {
                             timesUp = true;
                             // go to GameOver page
                             paused = true;
+                            try {
+                                AudioStream audioLose = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/timesup.wav"));
+                                AudioPlayer.player.start(audioLose);
+                            } catch(Exception e) {
+                                e.printStackTrace();
+                            }
                             gameInterface.gameOver("Time's up!");
                         }
                         return;
@@ -81,6 +87,12 @@ public class MyTimer {
     }
 
     public void add(int time) {
+        try {
+            AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/add.wav"));
+            AudioPlayer.player.start(audioFall);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         timeLeft += time;
         if (timeLeft > 60)
             timeLeft = 60;
