@@ -65,7 +65,7 @@ public class LogicGame {
             for (int j = 0; j < numCol; j++) {
                 existingX = ((i % 2) + 2.1 * j + 1) * r - r;
                 existingY = (1 + 1.8 * i) * r - r;
-                if (distance(existingX, existingY, x, y) <= r) {
+                if (distance(existingX, existingY, x, y) <= 1.5 * r) {
                     // move from here to existingX, existingY
                     labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
                     moved = true;
@@ -86,7 +86,7 @@ public class LogicGame {
                 for (int j = 0; j < numCol; j++) {
                     existingX = ((i % 2) + 2.1 * j + 1) * r - r;
                     existingY = (1 + 1.8 * i) * r - r;
-                    if (distance(existingX, existingY, x, y) <= r) {
+                    if (distance(existingX, existingY, x, y) <= 1.5 * r) {
                         // move from here to existingX, existingY
                         labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
                         moved = true;
@@ -200,12 +200,12 @@ public class LogicGame {
 
     public void generateNewBall() {
         currBall = nextBall;
-        labelNextBall.setBounds(200, 500, 2 * r, 2 * r); // move next ball to curr ball location
+        labelNextBall.setBounds(cannonCenterX - r, cannonCenterY - r, 2 * r, 2 * r); // move next ball to curr ball location
         labelCurrBall = labelNextBall;
         labelNextBall = new JLabel();
         nextBall = rand.nextInt(numTyp) + 1; // should not be 0, 0 is empty ball
         labelNextBall.setIcon(textures[nextBall - 1]);
-        labelNextBall.setBounds(100, 500, 2 * r, 2 * r);
+        labelNextBall.setBounds(cannonCenterX - 4 * r, cannonCenterY - r, 2 * r, 2 * r);
         panelGame.add(labelNextBall);
     }
 
@@ -254,7 +254,7 @@ public class LogicGame {
         cannon = new JLabel();
         cannon.setIcon(cannonTexture);
         // cannon rotates around: 225, 500
-        cannonCenterX = 225; cannonCenterY = 500;
+        cannonCenterX = GlobalSettings.cannonCenterX; cannonCenterY = GlobalSettings.cannonCenterY;
         cannon.setBounds(cannonCenterX - 50, cannonCenterY - 50, 100, 100);
         panelGame.add(cannon);
 
@@ -264,8 +264,8 @@ public class LogicGame {
         labelNextBall = new JLabel();
         labelCurrBall.setIcon(textures[currBall - 1]);
         labelNextBall.setIcon(textures[nextBall - 1]);
-        labelCurrBall.setBounds(200, 500, 2 * r, 2 * r);
-        labelNextBall.setBounds(100, 500, 2 * r, 2 * r);
+        labelCurrBall.setBounds(cannonCenterX - r, cannonCenterY - r, 2 * r, 2 * r);
+        labelNextBall.setBounds(cannonCenterX - 4 * r, cannonCenterY - r, 2 * r, 2 * r);
         panelGame.add(labelCurrBall);
         panelGame.add(labelNextBall);
 
@@ -345,7 +345,7 @@ public class LogicGame {
         }
 
         public void run() {
-            while (newY < 500) { // find stop condition!
+            while (newY < GlobalSettings.deathLineHeight) { // find stop condition!
                 newY += (int)v;
                 fallingBall.setBounds(newX, newY, 2 * r, 2 * r);
                 try {
@@ -369,12 +369,12 @@ public class LogicGame {
         public void run() {
             synchronized(map) {
                 int step = 0;
-                newX = 200;
-                newY = 500;
+                newX = cannonCenterX - r;
+                newY = cannonCenterY - r;
                 while (!stopped(newX, newY)) { // find stop condition!
                     newX += (int)(v * dx);
                     newY += (int)(v * dy);
-                    if (newX <= 10 || newX >= 450) { // reflected
+                    if (newX <= 10 || newX >= GlobalSettings.windowWidth - 10) { // reflected
                         dx = -dx;
                     }
                     step ++;
@@ -402,10 +402,8 @@ public class LogicGame {
                 fall();
                 // determine if wins or fails!
                 if (fails()) {
-                    // System.out.println("fails!");
                     index.gamePage.gameOver("You lose!");
                 } else if (wins()) {
-                    // System.out.println("wins!");
                     index.gamePage.gameOver("You win!");
                 }
             }

@@ -13,13 +13,13 @@ import javax.imageio.ImageIO;
 class JFrameWithBg extends JFrame {
     public JFrameWithBg(String name) {
         setTitle(name);
-        int windowWidth = 460, windowHeight = 640;
+        int windowWidth = GlobalSettings.windowWidth, windowHeight = GlobalSettings.windowHeight;
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         ImageIcon background = 
             new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/background.png"))
-                        .getImage().getScaledInstance(windowWidth, windowHeight, Image.SCALE_DEFAULT));// 背景图片
-        JLabel labelBg = new JLabel(background);// 把背景图片显示在一个标签里面
+                        .getImage().getScaledInstance(windowWidth, windowHeight, Image.SCALE_DEFAULT)); // background
+        JLabel labelBg = new JLabel(background); // put background image in a label
         labelBg.setBounds(0, 0, windowWidth, windowHeight);
         this.getLayeredPane().setLayout(null);
         this.getLayeredPane().add(labelBg, new Integer(Integer.MIN_VALUE));
@@ -36,7 +36,7 @@ public class Index{
     public Index() {
         frame = new JFrameWithBg("Bubble Game");
         createNew();
-        frame.setBounds(100, 100, 460, 640);
+        frame.setBounds(100, 100, GlobalSettings.windowWidth, GlobalSettings.windowHeight);
         frame.setVisible(true);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

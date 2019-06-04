@@ -124,9 +124,9 @@ public class GameInterface {
     }
 
     public void gameOver(String endGameMessage) {
+        timer.reset();
         JOptionPane.showMessageDialog(frame, endGameMessage); // display message
         // clear game page and restart everything
-        timer.reset();
         panelGame.setVisible(false);
         panelGameSettings.setVisible(false);
         panelTimer.setVisible(false);
