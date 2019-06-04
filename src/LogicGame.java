@@ -61,41 +61,22 @@ public class LogicGame {
         // double xCenter = (i % 2) + 2.1 * j + 1, yCenter = 1 + 1.8 * i;
         int movedI = (int)Math.round(y / 1.8 / r);
         int movedJ = (int)Math.round(x / 2.1 / r) - (movedI % 2);
+        double min = 10.0 * r;
         for (int i = 0; i < numRow + 1; i++)
             for (int j = 0; j < numCol; j++) {
                 existingX = ((i % 2) + 2.1 * j + 1) * r - r;
                 existingY = (1 + 1.8 * i) * r - r;
-                if (distance(existingX, existingY, x, y) <= 1.5 * r) {
+                double dist = distance(existingX, existingY, x, y);
+                if (dist < min && map[i][j] == 0) {
                     // move from here to existingX, existingY
-                    labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
-                    moved = true;
+                    min = dist;
                     movedI = i;
                     movedJ = j;
-                    break;
                 }
             }
-        // cases where the ball is to the right-most position in an even row.
-        // it is not within range r of the closest point, so it is not moved
-        // TODO: fix the bug when right-most ball fails!
-        if (moved == false) {
-            // yCenter = 1 + 1.8 * i;
-            int currRow = (int)Math.round(y / 1.8 / r);
-            if (currRow % 2 == 0)
-                x -= 2 * r;
-            for (int i = 0; i < numRow + 1; i++)
-                for (int j = 0; j < numCol; j++) {
-                    existingX = ((i % 2) + 2.1 * j + 1) * r - r;
-                    existingY = (1 + 1.8 * i) * r - r;
-                    if (distance(existingX, existingY, x, y) <= 1.5 * r) {
-                        // move from here to existingX, existingY
-                        labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
-                        moved = true;
-                        movedI = i;
-                        movedJ = j;
-                        break;
-                    }
-                }
-        }
+        existingX = ((movedI % 2) + 2.1 * movedJ + 1) * r - r;
+        existingY = (1 + 1.8 * movedI) * r - r;
+        labelCurrBall.setBounds((int)existingX, (int)existingY, 2 * r, 2 * r);
         newI.setValue(movedI);
         newJ.setValue(movedJ);
     }
@@ -202,11 +183,15 @@ public class LogicGame {
         currBall = nextBall;
         labelNextBall.setBounds(cannonCenterX - r, cannonCenterY - r, 2 * r, 2 * r); // move next ball to curr ball location
         labelCurrBall = labelNextBall;
-        labelNextBall = new JLabel();
+        JLabel newLabelNextBall = new JLabel();
         nextBall = rand.nextInt(numTyp) + 1; // should not be 0, 0 is empty ball
-        labelNextBall.setIcon(textures[nextBall - 1]);
-        labelNextBall.setBounds(cannonCenterX - 4 * r, cannonCenterY - r, 2 * r, 2 * r);
-        panelGame.add(labelNextBall);
+        newLabelNextBall.setIcon(textures[nextBall - 1]);
+        newLabelNextBall.setBounds(cannonCenterX - 4 * r, cannonCenterY - r, 2 * r, 2 * r);
+        labelNextBall = newLabelNextBall;
+        panelGame.add(newLabelNextBall);
+        index.frame.revalidate();
+        index.frame.repaint(); // repaint to clean up!
+        // panelGame.add(labelNextBall);
     }
 
     public boolean stopped(int newX, int newY) {
@@ -268,6 +253,10 @@ public class LogicGame {
         labelNextBall.setBounds(cannonCenterX - 4 * r, cannonCenterY - r, 2 * r, 2 * r);
         panelGame.add(labelCurrBall);
         panelGame.add(labelNextBall);
+
+        // tools: bomb, rainbow, laser, gold
+        buttonBomb = new JButton();
+        panelGame.add();
 
         GameMouseListener listener = new GameMouseListener();
         panelGame.addMouseListener(listener);
@@ -374,7 +363,7 @@ public class LogicGame {
                 while (!stopped(newX, newY)) { // find stop condition!
                     newX += (int)(v * dx);
                     newY += (int)(v * dy);
-                    if (newX <= 10 || newX >= GlobalSettings.windowWidth - 10) { // reflected
+                    if (newX <= 10 || newX >= GlobalSettings.windowWidth - 50) { // reflected
                         dx = -dx;
                     }
                     step ++;
