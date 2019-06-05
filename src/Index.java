@@ -30,7 +30,7 @@ class JFrameWithBg extends JFrame {
 public class Index{
     JFrameWithBg frame;
     JPanel panelIndex;
-    JButton buttonStart1, buttonStart2, buttonStart3, buttonQuit;
+    JButton buttonStart1, buttonStart2, buttonStart3, buttonStart4, buttonQuit;
     GameInterface gamePage;
     Audios audios;
     // public static Index indexPage;
@@ -53,6 +53,7 @@ public class Index{
         buttonStart1 = new JButton("LEVEL 1");
         buttonStart2 = new JButton("LEVEL 2");
         buttonStart3 = new JButton("LEVEL 3");
+        buttonStart4 = new JButton("CUSTOM DIFFICULTY");
         buttonQuit = new JButton("QUIT");
 
         buttonStart1.addActionListener(new ActionListener() {
@@ -65,7 +66,7 @@ public class Index{
                 } catch(Exception e0) {
                     e0.printStackTrace();
                 }
-                gamePage = new GameInterface(1, frame, panelIndex, myIndex);
+                gamePage = new GameInterface(1, frame, panelIndex, myIndex, "");
             }
         });
 
@@ -79,7 +80,7 @@ public class Index{
                 } catch(Exception e1) {
                     e1.printStackTrace();
                 }
-                gamePage = new GameInterface(2, frame, panelIndex, myIndex);
+                gamePage = new GameInterface(2, frame, panelIndex, myIndex, "");
             }
         });
 
@@ -93,7 +94,29 @@ public class Index{
                 } catch(Exception e2) {
                     e2.printStackTrace();
                 }
-                gamePage = new GameInterface(3, frame, panelIndex, myIndex);
+                gamePage = new GameInterface(3, frame, panelIndex, myIndex, "");
+            }
+        });
+
+        buttonStart4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //frame.getContentPane().removeAll();
+                // open file dialog
+                FileDialog fd = new FileDialog(frame, "Choose a customs file", FileDialog.LOAD);
+                fd.setFile("*.txt");
+                fd.setVisible(true);
+                String filename = fd.getFile();
+                if (filename != null) {
+                    try {
+                        AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                        AudioPlayer.player.start(audioBegin);
+                    } catch(Exception e2) {
+                        e2.printStackTrace();
+                    }
+                    panelIndex.setVisible(false);
+                    // read: time, row, column, color
+                    gamePage = new GameInterface(3, frame, panelIndex, myIndex, filename);
+                }
             }
         });
 
@@ -107,10 +130,12 @@ public class Index{
         buttonStart1.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonStart2.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonStart3.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonStart4.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonQuit.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelIndex.add(buttonStart1);
         panelIndex.add(buttonStart2);
         panelIndex.add(buttonStart3);
+        panelIndex.add(buttonStart4);
         panelIndex.add(buttonQuit);
 
         //panelIndex.setVisible(true);

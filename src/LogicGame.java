@@ -291,9 +291,66 @@ public class LogicGame {
         return false;
     }
 
+    public void initializeGame(JPanel panelGameIn, String filename) {
+        panelGame = panelGameIn;
+        panelGame.setLayout(null); // set absolute layout
+        File file = new File(filename);
+        Scanner scanner;
+        try {
+            scanner = new Scanner(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        scanner.next();
+        scanner.next(); // passed time
+        scanner.next();
+        numRow = scanner.nextInt();
+        scanner.next();
+        numCol = scanner.nextInt();
+        scanner.next();
+        numTyp = scanner.nextInt();
+        // int numRowIn, int numColIn, int numColorIn, int[][] ballsIn
+        int[][] ballsIn = new int[numRow + 1][numCol];
+        scanner.useDelimiter("");
+        char ch = scanner.next().charAt(0);
+        for (int i = 0; i < numRow; i ++) {
+            for (int j = 0; j < numCol; j ++) {
+                ch = scanner.next().charAt(0);
+                while (ch == ' ' || ch == '\n') {
+                    ch = scanner.next().charAt(0);
+                }
+                if (ch == '.')
+                    ballsIn[i][j] = 0;
+                else
+                    ballsIn[i][j] = ch - '0';
+            }
+        }
+        initializeBalls(ballsIn);
+        initializeButtons();
+    }
+
     public void initializeGame(int level, JPanel panelGameIn) {
         panelGame = panelGameIn;
         panelGame.setLayout(null); // set absolute layout
+        initializeBallsRandom(level);
+        initializeButtons();
+    }
+
+    public void initializeBalls(int[][] mapIn) {
+        map = mapIn;
+        balls = new JLabel[numRow + 1][numCol];
+        for (int i = 0; i < numRow; i ++)
+            for (int j = 0; j < numCol; j ++) {
+                if (map[i][j] == 0)
+                    continue;
+                double xCenter = (i % 2) + 2.1 * j + 1, yCenter = 1 + 1.8 * i;
+                balls[i][j] = renderBalls(xCenter, yCenter, map[i][j]); // graphics
+                // System.out.println(String.valueOf(i) + ", " + String.valueOf(j));
+            }
+    }
+
+    public void initializeBallsRandom(int level) {
         switch (level) {
             case 1: numInitRow = 3; numCol = 7; numTyp = 3; break;
             case 2: numInitRow = 4; numCol = 7; numTyp = 4; break;
@@ -312,8 +369,9 @@ public class LogicGame {
                 balls[i][j] = renderBalls(xCenter, yCenter, map[i][j]); // graphics
                 // System.out.println(String.valueOf(i) + ", " + String.valueOf(j));
             }
-        numBalls = numInitRow * numCol; // initial num of balls
+    }
 
+    public void initializeButtons() {
         cannon = new JLabel();
         cannon.setIcon(cannonTexture);
         // cannon rotates around: 225, 500
@@ -394,7 +452,7 @@ public class LogicGame {
         panelGame.addMouseMotionListener(listener);
     }
 
-    public LogicGame(int level, JPanel panelGameIn, Index indexIn) {
+    public LogicGame(int level, JPanel panelGameIn, Index indexIn, String filename) {
         textures[0] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/1.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         textures[1] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/2.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         textures[2] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/3.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
@@ -409,7 +467,10 @@ public class LogicGame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        initializeGame(level, panelGameIn);
+        if (filename == "")
+            initializeGame(level, panelGameIn);
+        else
+            initializeGame(panelGameIn, filename);
         index = indexIn;
     }
 

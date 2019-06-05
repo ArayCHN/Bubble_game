@@ -18,7 +18,7 @@ public class GameInterface {
     MyTimer timer;
     Index index;
 
-    public GameInterface(int level, JFrame frameIndexIn, JPanel panelIndexIn, Index indexIn) {
+    public GameInterface(int level, JFrame frameIndexIn, JPanel panelIndexIn, Index indexIn, String filename) {
         // level1: 3*7, 3; level2: 4*7, 4; level3: 5*7, 5 colors
         index = indexIn;
         frame = frameIndexIn;
@@ -32,11 +32,32 @@ public class GameInterface {
         panelTimer.setPreferredSize(new Dimension(200, 20));
 
         // add timer
-        timer = new MyTimer(60, panelTimer, this); // 60 seconds
+        int timeLength = 60;
+        if (filename != "") {// there is a file, read time!
+            File file = new File(filename);
+            Scanner scanner;
+            try {
+                scanner = new Scanner(file);
+            } catch(Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            scanner.next();
+            String timeString = scanner.next();
+            timeString = timeString.substring(0, timeString.length() - 1);
+            try {
+                timeLength = Integer.parseInt(timeString);
+            }
+            catch (NumberFormatException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        timer = new MyTimer(timeLength, panelTimer, this); // 60 seconds
         timer.paused = false;
 
         // add balls
-        LogicGame logicGame = new LogicGame(level, panelGame, index);
+        LogicGame logicGame = new LogicGame(level, panelGame, index, filename);
 
         // add tools
 

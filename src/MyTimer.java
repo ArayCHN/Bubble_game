@@ -97,7 +97,7 @@ public class MyTimer {
             e.printStackTrace();
         }
         timeLeft += time;
-        if (timeLeft > 60)
-            timeLeft = 60;
+        if (timeLeft > totalTime)
+            timeLeft = totalTime;
     }
 }
