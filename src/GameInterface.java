@@ -75,6 +75,14 @@ public class GameInterface {
                 timer.paused = true;
             }
         });
+
+        try {
+            Thread.sleep(800);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        timer.begin();
     }
 
     public void createMenu() {

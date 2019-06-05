@@ -59,6 +59,12 @@ public class Index{
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
+                try {
+                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                    AudioPlayer.player.start(audioBegin);
+                } catch(Exception e0) {
+                    e0.printStackTrace();
+                }
                 gamePage = new GameInterface(1, frame, panelIndex, myIndex);
             }
         });
@@ -67,6 +73,12 @@ public class Index{
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
+                try {
+                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                    AudioPlayer.player.start(audioBegin);
+                } catch(Exception e1) {
+                    e1.printStackTrace();
+                }
                 gamePage = new GameInterface(2, frame, panelIndex, myIndex);
             }
         });
@@ -75,6 +87,12 @@ public class Index{
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
+                try {
+                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                    AudioPlayer.player.start(audioBegin);
+                } catch(Exception e2) {
+                    e2.printStackTrace();
+                }
                 gamePage = new GameInterface(3, frame, panelIndex, myIndex);
             }
         });

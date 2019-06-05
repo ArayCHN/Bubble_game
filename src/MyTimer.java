@@ -35,9 +35,12 @@ public class MyTimer {
         bar.setStringPainted(true);
         panelTimer.add(bar);
         //panelTimer.add(labelTimer);
-        setTimer();
         // startTime = System.currentTimeMillis();
         // elapsedTime = 0;
+    }
+
+    public void begin() {
+        setTimer();
     }
 
     public void setTimer() {
@@ -88,8 +91,8 @@ public class MyTimer {
 
     public void add(int time) {
         try {
-            AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/add.wav"));
-            AudioPlayer.player.start(audioFall);
+            AudioStream audioAdd = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/add.wav"));
+            AudioPlayer.player.start(audioAdd);
         } catch(Exception e) {
             e.printStackTrace();
         }
