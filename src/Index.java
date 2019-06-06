@@ -18,7 +18,7 @@ class JFrameWithBg extends JFrame {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         ImageIcon background = 
-            new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/background.png"))
+            new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/background.png"))
                         .getImage().getScaledInstance(windowWidth, windowHeight, Image.SCALE_DEFAULT)); // background
         JLabel labelBg = new JLabel(background); // put background image in a label
         labelBg.setBounds(0, 0, windowWidth, windowHeight);
@@ -50,18 +50,43 @@ public class Index{
         panelIndex = new JPanel();
         panelIndex.setLayout(new FlowLayout());
 
-        buttonStart1 = new JButton("LEVEL 1");
-        buttonStart2 = new JButton("LEVEL 2");
-        buttonStart3 = new JButton("LEVEL 3");
-        buttonStart4 = new JButton("CUSTOM DIFFICULTY");
-        buttonQuit = new JButton("QUIT");
+        ImageIcon buttonIcon = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/button.png")).getImage().getScaledInstance(250, 100, Image.SCALE_DEFAULT));
+        buttonStart1 = new JButton("LEVEL 1 ");
+        buttonStart1.setBorder(BorderFactory.createEmptyBorder());
+        buttonStart1.setHorizontalTextPosition(JButton.CENTER);
+        buttonStart1.setVerticalTextPosition(JButton.CENTER);
+        buttonStart1.setIcon(buttonIcon);
+
+        buttonStart2 = new JButton("LEVEL 2 ");
+        buttonStart2.setBorder(BorderFactory.createEmptyBorder());
+        buttonStart2.setHorizontalTextPosition(JButton.CENTER);
+        buttonStart2.setVerticalTextPosition(JButton.CENTER);
+        buttonStart2.setIcon(buttonIcon);
+
+        buttonStart3 = new JButton("LEVEL 3 ");
+        buttonStart3.setBorder(BorderFactory.createEmptyBorder());
+        buttonStart3.setHorizontalTextPosition(JButton.CENTER);
+        buttonStart3.setVerticalTextPosition(JButton.CENTER);
+        buttonStart3.setIcon(buttonIcon);
+
+        buttonStart4 = new JButton(" CUSTOM ");
+        buttonStart4.setBorder(BorderFactory.createEmptyBorder());
+        buttonStart4.setHorizontalTextPosition(JButton.CENTER);
+        buttonStart4.setVerticalTextPosition(JButton.CENTER);
+        buttonStart4.setIcon(buttonIcon);
+
+        buttonQuit = new JButton("  QUIT  ");
+        buttonQuit.setBorder(BorderFactory.createEmptyBorder());
+        buttonQuit.setHorizontalTextPosition(JButton.CENTER);
+        buttonQuit.setVerticalTextPosition(JButton.CENTER);
+        buttonQuit.setIcon(buttonIcon);
 
         buttonStart1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
                 try {
-                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("sound/begin.wav"));
                     AudioPlayer.player.start(audioBegin);
                 } catch(Exception e0) {
                     e0.printStackTrace();
@@ -75,7 +100,7 @@ public class Index{
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
                 try {
-                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("sound/begin.wav"));
                     AudioPlayer.player.start(audioBegin);
                 } catch(Exception e1) {
                     e1.printStackTrace();
@@ -89,7 +114,7 @@ public class Index{
                 //frame.getContentPane().removeAll();
                 panelIndex.setVisible(false);
                 try {
-                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                    AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("sound/begin.wav"));
                     AudioPlayer.player.start(audioBegin);
                 } catch(Exception e2) {
                     e2.printStackTrace();
@@ -108,7 +133,7 @@ public class Index{
                 String filename = fd.getFile();
                 if (filename != null) {
                     try {
-                        AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/begin.wav"));
+                        AudioStream audioBegin = new AudioStream(BubbleGame.class.getResourceAsStream("sound/begin.wav"));
                         AudioPlayer.player.start(audioBegin);
                     } catch(Exception e2) {
                         e2.printStackTrace();
@@ -132,10 +157,26 @@ public class Index{
         buttonStart3.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonStart4.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonQuit.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        int buttonSize = 38;
+        Font buttonFont = new Font("System", Font.BOLD, buttonSize);
+        buttonStart1.setFont(buttonFont);
+        buttonStart2.setFont(buttonFont);
+        buttonStart3.setFont(buttonFont);
+        buttonStart4.setFont(buttonFont);
+        buttonQuit.setFont(buttonFont);
+
+
+        int buttonSpace = 20;
+        panelIndex.add(Box.createRigidArea(new Dimension(0, 50)));
         panelIndex.add(buttonStart1);
+        panelIndex.add(Box.createRigidArea(new Dimension(0, buttonSpace)));
         panelIndex.add(buttonStart2);
+        panelIndex.add(Box.createRigidArea(new Dimension(0, buttonSpace)));
         panelIndex.add(buttonStart3);
+        panelIndex.add(Box.createRigidArea(new Dimension(0, buttonSpace)));
         panelIndex.add(buttonStart4);
+        panelIndex.add(Box.createRigidArea(new Dimension(0, buttonSpace)));
         panelIndex.add(buttonQuit);
 
         //panelIndex.setVisible(true);

@@ -52,7 +52,7 @@ public class MyTimer {
                 if (!paused) {
                     timeLeft --;
                     try {
-                        AudioStream audioTick = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/tick.wav"));
+                        AudioStream audioTick = new AudioStream(BubbleGame.class.getResourceAsStream("sound/tick.wav"));
                         AudioPlayer.player.start(audioTick);
                     } catch(Exception e) {
                         e.printStackTrace();
@@ -63,7 +63,7 @@ public class MyTimer {
                             // go to GameOver page
                             paused = true;
                             try {
-                                AudioStream audioLose = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/timesup.wav"));
+                                AudioStream audioLose = new AudioStream(BubbleGame.class.getResourceAsStream("sound/timesup.wav"));
                                 AudioPlayer.player.start(audioLose);
                             } catch(Exception e) {
                                 e.printStackTrace();
@@ -91,7 +91,7 @@ public class MyTimer {
 
     public void add(int time) {
         try {
-            AudioStream audioAdd = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/add.wav"));
+            AudioStream audioAdd = new AudioStream(BubbleGame.class.getResourceAsStream("sound/add.wav"));
             AudioPlayer.player.start(audioAdd);
         } catch(Exception e) {
             e.printStackTrace();

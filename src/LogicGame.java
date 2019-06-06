@@ -170,7 +170,7 @@ public class LogicGame {
             if (eliminatable(i, j) >= 3) {
                 clearVisited();
                 try {
-                    AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/eliminate.wav"));
+                    AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("sound/eliminate.wav"));
                     AudioPlayer.player.start(audioFall);
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -181,7 +181,7 @@ public class LogicGame {
             fall();
         } else if (map[i][j] == 6) { // bomb
             try {
-                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/bomb.wav"));
+                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("sound/bomb.wav"));
                 AudioPlayer.player.start(audioFall);
             } catch(Exception e) {
                 e.printStackTrace();
@@ -199,7 +199,7 @@ public class LogicGame {
             fall();
         } else if (map[i][j] == 7) {
             try {
-                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/transform.wav"));
+                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("sound/transform.wav"));
                 AudioPlayer.player.start(audioFall);
             } catch(Exception e) {
                 e.printStackTrace();
@@ -224,7 +224,7 @@ public class LogicGame {
             if (eliminatable(i, j) >= 3) {
                 clearVisited();
                 try {
-                    AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/eliminate.wav"));
+                    AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("sound/eliminate.wav"));
                     AudioPlayer.player.start(audioFall);
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -391,7 +391,7 @@ public class LogicGame {
         panelGame.add(labelNextBall);
 
         // tools: bomb, rainbow, laser, gold
-        ImageIcon iconBomb = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/bomb.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        ImageIcon iconBomb = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/bomb.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         JButton buttonBomb = new JButton(iconBomb);
         buttonBomb.setBounds(cannonCenterX + 3 * r, cannonCenterY - r, 2 * r, 2 * r);
         panelGame.add(buttonBomb);
@@ -404,7 +404,7 @@ public class LogicGame {
             }
         });
 
-        ImageIcon iconRainbow = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/rainbow.png")).getImage().getScaledInstance((int)(1.8*r), (int)(1.8*r), Image.SCALE_DEFAULT));
+        ImageIcon iconRainbow = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/rainbow.png")).getImage().getScaledInstance((int)(1.8*r), (int)(1.8*r), Image.SCALE_DEFAULT));
         JButton buttonRainbow = new JButton(iconRainbow);
         buttonRainbow.setBounds(cannonCenterX + 6 * r, cannonCenterY - r, 2 * r, 2 * r);
         panelGame.add(buttonRainbow);
@@ -417,7 +417,7 @@ public class LogicGame {
             }
         });
 
-        ImageIcon iconLaser = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/laser.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        ImageIcon iconLaser = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/laser.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         JButton buttonLaser = new JButton(iconLaser);
         buttonLaser.setBounds(cannonCenterX + 3 * r, cannonCenterY - 3 * r, 2 * r, 2 * r);
         panelGame.add(buttonLaser);
@@ -436,7 +436,7 @@ public class LogicGame {
             }
         });
 
-        ImageIcon iconGold = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/gold.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        ImageIcon iconGold = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/gold.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
         JButton buttonGold = new JButton(iconGold);
         buttonGold.setBounds(cannonCenterX + 6 * r, cannonCenterY - 3 * r, 2 * r, 2 * r);
         panelGame.add(buttonGold);
@@ -453,17 +453,17 @@ public class LogicGame {
     }
 
     public LogicGame(int level, JPanel panelGameIn, Index indexIn, String filename) {
-        textures[0] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/1.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[1] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/2.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[2] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/3.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[3] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/4.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[4] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/5.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
-        textures[5] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/6.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT)); // bomb
-        textures[6] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/7.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT)); // rainbow
+        textures[0] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/1.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        textures[1] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/2.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        textures[2] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/3.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        textures[3] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/4.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        textures[4] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/5.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT));
+        textures[5] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/6.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT)); // bomb
+        textures[6] = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/7.png")).getImage().getScaledInstance(2*r, 2*r, Image.SCALE_DEFAULT)); // rainbow
 
-        cannonTexture = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("../img/cannon.png")).getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
+        cannonTexture = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/cannon.png")).getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
         try {
-            cannonImage = ImageIO.read(getClass().getResource("../img/cannon.png"));
+            cannonImage = ImageIO.read(getClass().getResource("img/cannon.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -527,7 +527,7 @@ public class LogicGame {
 
         public void run() {
             try {
-                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/fall.wav"));
+                AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("sound/fall.wav"));
                 AudioPlayer.player.start(audioFall);
             } catch(Exception e) {
                 e.printStackTrace();
@@ -556,7 +556,7 @@ public class LogicGame {
         public void run() {
             synchronized(map) {
                 try {
-                    AudioStream audioLaunch = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/launch.wav"));
+                    AudioStream audioLaunch = new AudioStream(BubbleGame.class.getResourceAsStream("sound/launch.wav"));
                     AudioPlayer.player.start(audioLaunch);
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -569,7 +569,7 @@ public class LogicGame {
                     newY += (int)(v * dy);
                     if (newX <= 10 || newX >= GlobalSettings.windowWidth - 50) { // reflected
                         try {
-                            AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/reflect.wav"));
+                            AudioStream audioFall = new AudioStream(BubbleGame.class.getResourceAsStream("sound/reflect.wav"));
                             AudioPlayer.player.start(audioFall);
                         } catch(Exception e) {
                             e.printStackTrace();
@@ -595,7 +595,7 @@ public class LogicGame {
                 // determine if wins or fails!
                 if (fails()) {
                     try {
-                        AudioStream audioLose = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/lose.wav"));
+                        AudioStream audioLose = new AudioStream(BubbleGame.class.getResourceAsStream("sound/lose.wav"));
                         AudioPlayer.player.start(audioLose);
                     } catch(Exception e) {
                         e.printStackTrace();
@@ -603,7 +603,7 @@ public class LogicGame {
                     index.gamePage.gameOver("You lose!");
                 } else if (wins()) {
                     try {
-                        AudioStream audioWin = new AudioStream(BubbleGame.class.getResourceAsStream("../sound/win.wav"));
+                        AudioStream audioWin = new AudioStream(BubbleGame.class.getResourceAsStream("sound/win.wav"));
                         AudioPlayer.player.start(audioWin);
                     } catch(Exception e) {
                         e.printStackTrace();

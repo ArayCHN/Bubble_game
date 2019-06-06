@@ -98,7 +98,7 @@ public class GameInterface {
         });
 
         try {
-            Thread.sleep(800);
+            Thread.sleep(500);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -114,9 +114,26 @@ public class GameInterface {
         JButton buttonResume, buttonRestart, buttonQuit;
         panelMenu = new JPanel();
         panelMenu.setOpaque(false);
-        buttonResume = new JButton("RESUME");
-        buttonRestart = new JButton("RESTART");
-        buttonQuit = new JButton("QUIT");
+
+        ImageIcon buttonIcon = new ImageIcon(new ImageIcon(BubbleGame.class.getResource("img/button.png")).getImage().getScaledInstance(250, 100, Image.SCALE_DEFAULT));
+        
+        buttonResume = new JButton("  RESUME  ");
+        buttonResume.setBorder(BorderFactory.createEmptyBorder());
+        buttonResume.setHorizontalTextPosition(JButton.CENTER);
+        buttonResume.setVerticalTextPosition(JButton.CENTER);
+        buttonResume.setIcon(buttonIcon);
+
+        buttonRestart = new JButton(" RESTART  ");
+        buttonRestart.setBorder(BorderFactory.createEmptyBorder());
+        buttonRestart.setHorizontalTextPosition(JButton.CENTER);
+        buttonRestart.setVerticalTextPosition(JButton.CENTER);
+        buttonRestart.setIcon(buttonIcon);
+
+        buttonQuit = new JButton("   QUIT   ");
+        buttonQuit.setBorder(BorderFactory.createEmptyBorder());
+        buttonQuit.setHorizontalTextPosition(JButton.CENTER);
+        buttonQuit.setVerticalTextPosition(JButton.CENTER);
+        buttonQuit.setIcon(buttonIcon);
 
         buttonResume.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -146,8 +163,21 @@ public class GameInterface {
             }
         });
 
+        int buttonSize = 38;
+        Font buttonFont = new Font("System", Font.BOLD, buttonSize);
+        buttonRestart.setFont(buttonFont);
+        buttonResume.setFont(buttonFont);
+        buttonQuit.setFont(buttonFont);
+        buttonResume.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonRestart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonQuit.setAlignmentX(Component.CENTER_ALIGNMENT);
+        int buttonSpace = 20;
+        panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
+        panelMenu.add(Box.createRigidArea(new Dimension(0, 100)));
         panelMenu.add(buttonResume);
+        panelMenu.add(Box.createRigidArea(new Dimension(0, 30)));
         panelMenu.add(buttonRestart);
+        panelMenu.add(Box.createRigidArea(new Dimension(0, 30)));
         panelMenu.add(buttonQuit);
         frame.add(panelMenu);
         menuCreated = true;
